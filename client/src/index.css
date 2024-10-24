@@ -1,0 +1,9 @@
+
+
+
+body{
+  background:linear-gradient(120deg, #a8e1f3, #f8c5d7); /* Gradient from light blue to pink */
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
