@@ -54,13 +54,13 @@ const Form = ({ currentId, setCurrentId }) => {
         background: "linear-gradient(135deg, #d1c4e9 0%, #fff9c4 100%)",
         minHeight: {
           xs: "40vh", // Minimum height for extra small devices
-          sm: "45vh", // Increased height for small devices
-          md: "60vh", // Adjusted for medium devices
+          sm: "40vh", // Increased height for small devices
+          md: "55vh", // Adjusted for medium devices
           lg: "60vh", // Larger height for large devices
         },
         minWidth: {
           xs: "80%", // Almost full width for extra small devices
-          sm: "260px", // Fixed minimum width for small devices
+          sm: "250px", // Fixed minimum width for small devices
           md: "300px", // Larger width for medium devices
           lg: "300px", // Maximum width for large screens
         },
@@ -148,7 +148,7 @@ const Form = ({ currentId, setCurrentId }) => {
           label="Message"
           fullWidth
           multiline
-          rows={4}
+          rows={3}
           value={postData.message}
           onChange={(e) =>
             setPostData({ ...postData, message: e.target.value })
