@@ -40,14 +40,36 @@ export const updatePost = async (req, res) => {
   const { id } = req.params;
   const { title, message, creator, selectedFile, tags } = req.body;
 
+  // Check if the provided ID is a valid MongoDB ObjectId
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send(`No post with id: ${id}`);
 
-  const updatedPost = { creator, title, message, tags, selectedFile, _id: id };
+  try {
+    // Create the updated post object
+    const updatedPost = {
+      creator,
+      title,
+      message,
+      tags,
+      selectedFile,
+      _id: id,
+    };
 
-  await PostMessage.findByIdAndUpdate(id, updatedPost, { new: true });
+    // Update the post in the database and return the new updated document
+    const result = await PostMessage.findByIdAndUpdate(id, updatedPost, {
+      new: true,
+    });
 
-  res.json(updatedPost);
+    if (!result) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Send the updated post back to the client
+    res.json(result);
+  } catch (error) {
+    // Catch any potential errors and return a 500 status with an error message
+    res.status(500).json({ message: "Something went wrong", error });
+  }
 };
 
 export const deletePost = async (req, res) => {
