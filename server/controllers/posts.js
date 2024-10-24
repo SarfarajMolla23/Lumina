@@ -1,16 +1,27 @@
-import mongoose from "mongoose";
 import express from "express";
+import mongoose from "mongoose";
+
 import PostMessage from "../models/postMessage.js";
 
 const router = express.Router();
 
 export const getPosts = async (req, res) => {
   try {
-    const postMessage = await PostMessage.find();
+    const postMessages = await PostMessage.find();
 
-    console.log(postMessage);
+    res.status(200).json(postMessages);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
 
-    res.status(200).json(postMessage);
+export const getPost = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await PostMessage.findById(id);
+
+    res.status(200).json(post);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -40,36 +51,14 @@ export const updatePost = async (req, res) => {
   const { id } = req.params;
   const { title, message, creator, selectedFile, tags } = req.body;
 
-  // Check if the provided ID is a valid MongoDB ObjectId
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send(`No post with id: ${id}`);
 
-  try {
-    // Create the updated post object
-    const updatedPost = {
-      creator,
-      title,
-      message,
-      tags,
-      selectedFile,
-      _id: id,
-    };
+  const updatedPost = { creator, title, message, tags, selectedFile, _id: id };
 
-    // Update the post in the database and return the new updated document
-    const result = await PostMessage.findByIdAndUpdate(id, updatedPost, {
-      new: true,
-    });
+  await PostMessage.findByIdAndUpdate(id, updatedPost, { new: true });
 
-    if (!result) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    // Send the updated post back to the client
-    res.json(result);
-  } catch (error) {
-    // Catch any potential errors and return a 500 status with an error message
-    res.status(500).json({ message: "Something went wrong", error });
-  }
+  res.json(updatedPost);
 };
 
 export const deletePost = async (req, res) => {
@@ -78,19 +67,9 @@ export const deletePost = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send(`No post with id: ${id}`);
 
-  try {
-    const deletedPost = await PostMessage.findByIdAndDelete(id);
+  await PostMessage.findByIdAndRemove(id);
 
-    if (!deletedPost) {
-      return res.status(404).json({ message: "Post not found." });
-    }
-
-    console.log("DELETE!");
-    res.json({ message: "Post deleted successfully." });
-  } catch (error) {
-    console.error("Error while deleting the post:", error);
-    res.status(500).json({ message: "Something went wrong." });
-  }
+  res.json({ message: "Post deleted successfully." });
 };
 
 export const likePost = async (req, res) => {
@@ -100,6 +79,7 @@ export const likePost = async (req, res) => {
     return res.status(404).send(`No post with id: ${id}`);
 
   const post = await PostMessage.findById(id);
+
   const updatedPost = await PostMessage.findByIdAndUpdate(
     id,
     { likeCount: post.likeCount + 1 },
