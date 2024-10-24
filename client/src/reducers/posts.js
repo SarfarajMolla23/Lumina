@@ -6,7 +6,9 @@ import {
   LIKE,
 } from "../constants/actionTypes.js";
 
-export default (posts = [], action) => {
+// src/reducers/posts.js
+
+const postsReducer = (posts = [], action) => {
   switch (action.type) {
     case FETCH_ALL:
       return action.payload;
@@ -27,3 +29,5 @@ export default (posts = [], action) => {
       return posts;
   }
 };
+
+export default postsReducer;
